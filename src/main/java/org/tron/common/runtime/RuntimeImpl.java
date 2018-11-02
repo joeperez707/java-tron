@@ -12,11 +12,9 @@ import static org.tron.common.runtime.vm.VMUtils.saveProgramTraceFile;
 import static org.tron.common.runtime.vm.VMUtils.zipAndEncode;
 import static org.tron.common.runtime.vm.program.InternalTransaction.ExecutorType.ET_NORMAL_TYPE;
 import static org.tron.common.runtime.vm.program.InternalTransaction.ExecutorType.ET_PRE_TYPE;
-import static org.tron.common.runtime.vm.program.InternalTransaction.ExecutorType.ET_UNKNOWN_TYPE;
 import static org.tron.common.runtime.vm.program.InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE;
 import static org.tron.common.runtime.vm.program.InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE;
 import static org.tron.common.runtime.vm.program.InternalTransaction.TrxType.TRX_PRECOMPILED_TYPE;
-import static org.tron.common.runtime.vm.program.InternalTransaction.TrxType.TRX_UNKNOWN_TYPE;
 
 import com.google.protobuf.ByteString;
 import java.math.BigInteger;
@@ -90,8 +88,8 @@ public class RuntimeImpl implements Runtime {
 
   @Getter
   @Setter
-  private InternalTransaction.TrxType trxType = TRX_UNKNOWN_TYPE;
-  private ExecutorType executorType = ET_UNKNOWN_TYPE;
+  private InternalTransaction.TrxType trxType;
+  private ExecutorType executorType;
 
   //tx trace
   private TransactionTrace trace;
@@ -139,7 +137,7 @@ public class RuntimeImpl implements Runtime {
     this.isStaticCall = isStaticCall;
   }
 
-  public RuntimeImpl(Transaction tx, BlockCapsule block, DepositImpl deposit,
+  private RuntimeImpl(Transaction tx, BlockCapsule block, DepositImpl deposit,
       ProgramInvokeFactory programInvokeFactory) {
     this.trx = tx;
     this.deposit = deposit;
@@ -613,7 +611,7 @@ public class RuntimeImpl implements Runtime {
         traceContent = zipAndEncode(traceContent);
       }
 
-      String txHash = Hex.toHexString(new InternalTransaction(trx, trxType).getHash());
+      String txHash = Hex.toHexString(rootInternalTransaction.getHash());
       saveProgramTraceFile(config, txHash, traceContent);
     }
 
